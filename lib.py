@@ -12,7 +12,7 @@ class SignalWrapper(object):
         """
         Uchovává informace o ůvodním obrázku a vytvoří k němu odpovídající signál.
 
-        :param int img_path: Cesta k obr.
+        :param String img_path: Cesta k obr.
         """
         self.img_path = img_path
         self.signal = convert_normalized_image_to_signal(load_img_normalized(img_path))
