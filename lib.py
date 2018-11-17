@@ -90,12 +90,12 @@ def convert_normalized_image_to_signal(img_norm):
     return sig.astype(np.int32)
 
 
-def plot_image_signal(img_path, sig):
+def plot_image_signal(img_path):
     """
     vykresli obr. a jeho signal
     :param str img_path: Cesta k obrázku
-    :param sig: signal
     """
+    sig = SignalWrapper(img_path).getSignal()
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
     f, axarr = plt.subplots(2, sharex="all")
     axarr[0].imshow(img, cmap=plt.get_cmap('gray'))
