@@ -2,13 +2,13 @@
 Cílem je otestovat možnost použití algoritmu DTW pro nalezení odpovídajících obrázků podle vzoru. 
 
 ## Dynamic Time Warping (DTW)
-Algoritmus pro Dynamic Time Warping vychází z [1]. Výstupem algoritmu je hodnota představující odlišnost dvou signálů. Je připravena základní varianta a varianta s omezením výpočtu pro zvolené okno (viz [/examples/dtw_example.ipynb](https://github.com/BalounJ/DTW-for-images/blob/master/examples/dtw_example.ipynb)). Vzhledem k časové náročnosti je pro vyhodnocení MAP použita implementace z modulu cdtw.
+Algoritmus pro Dynamic Time Warping vychází z [1]. Výstupem algoritmu je hodnota představující odlišnost dvou signálů. Je připravena základní varianta a varianta s omezením výpočtu pro zvolené okno (viz [/examples/dtw_example.ipynb](https://github.com/BalounJ/DTW-for-images/blob/master/examples/dtw_example.ipynb)). Vzhledem k rozměrům obrázků nemůže dojít k přetečení (pro int32) a normalizace proto u DTW není řešena. Vzhledem k časové náročnosti je pro vyhodnocení MAP použita implementace z modulu cdtw.
 
 ## Princip řešení
 Řešení spočívá v převodu obrázku na signál a následném porovnávání signálů. Na základě porovnávání je odpověď tvořena množinou obrázků, které jsou seřazeny podle podobnosti se vzorovým obrázkem. Výsledek může vypadat podobně jako v [/examples/QbE_example.ipynb](https://github.com/BalounJ/DTW-for-images/blob/master/examples/QbE_example.ipynb).
 
 ### Převod obrázku na signál
-
+Signál je vytvořen jako obsah inkoustu ve sloupcích obrázku (viz [/examples/image_signal_example.ipynb](https://github.com/BalounJ/DTW-for-images/blob/master/examples/image_signal_example.ipynb)). Předtím je černobílý obrázek normalizován na hodnoty 0 (bílá) a 1 (černá).
 
 ## Vyhodnocení
 Vyhodnocení (více viz [/examples/MAP_eval.ipynb](https://github.com/BalounJ/DTW-for-images/blob/master/examples/MAP_eval.ipynb)) probíhá na Parzival Database [1], která je zpracována do následující struktury:
