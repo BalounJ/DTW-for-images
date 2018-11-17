@@ -10,10 +10,9 @@ class SignalWrapper(object):
     """
     def __init__(self, img_path):
         """
-        Slouží pro načtení obrázku tak jak je.
-        Používá se pouze pro vyhodnocení u sítě se Spatial Pyramid Pooling.
+        Uchovává informace o ůvodním obrázku a vytvoří k němu odpovídající signál.
 
-        :param int min_width: Minimální možná šířka obrázku, pokud není splněna bude obrázek roztáhnut na tuto šířku
+        :param int img_path: Cesta k obr.
         """
         self.img_path = img_path
         self.signal = convert_normalized_image_to_signal(load_img_normalized(img_path))
