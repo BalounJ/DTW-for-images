@@ -1,4 +1,6 @@
 import os
+from operator import itemgetter
+
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -99,3 +101,71 @@ def plot_image_signal(img_path, sig):
     axarr[0].imshow(img, cmap=plt.get_cmap('gray'))
     axarr[1].plot(sig)
     plt.show()
+
+
+def find_images(query_img_path, set_path, dtw_func, *argf):
+    """
+    Slouží pro nalezení nejbližších obrázků.
+
+    :param str query_img_path: cesta pro dotazovaný obrázek
+
+    :param str set_path: Cesta ke kořenové složce setu pro vyhledávání.
+    Očekává se, že v kořenové složce jsou pouze složky s názvy slov např.:
+    D:\parzivalDB\set_1\test\a-b
+    Ve složkách jsou potom obrázky pro dané slovo např:
+    D:\parzivalDB\set_1\test\a-b\d-279b-041_03.png
+
+    :param dtw_func: funkce dtw pro pouziti
+    :param argf: pripadne dalsi parametry pro dtw_func
+
+    :return: seznam dvojic [cesta k obrazku, dist] serazene od nejmensiho podle dist
+    """
+    qs = SignalWrapper(query_img_path).getSignal()
+    data = load_set(set_path)
+    rtn = []
+
+    for d in data:
+        for sw in d[1]:
+            dist = dtw_func(qs, sw.getSignal(), *argf)
+            if isinstance(dist, tuple):
+                dist = dist[0]
+            rtn.append([sw.getImgPath(), dist])
+    return sorted(rtn, key=itemgetter(1))  # seradim podle vzdalenosti
+
+
+def find_images_plot_n(n, query_img_path, set_path, dtw_func, *argf):
+    """
+    Vykresli n nejpodobnejsich obr.
+
+    :param int n: pocet obr. k zobrazeni
+
+    :param str query_img_path: cesta pro dotazovaný obrázek
+
+    :param str set_path: Cesta ke kořenové složce setu pro vyhledávání.
+    Očekává se, že v kořenové složce jsou pouze složky s názvy slov např.:
+    D:\parzivalDB\set_1\test\a-b
+    Ve složkách jsou potom obrázky pro dané slovo např:
+    D:\parzivalDB\set_1\test\a-b\d-279b-041_03.png
+
+    :param dtw_func: funkce dtw pro pouziti
+    :param argf: pripadne dalsi parametry pro dtw_func
+    """
+    data = find_images(query_img_path, set_path, dtw_func, *argf)
+
+    n = min(n, len(data))
+    numpy_vertical = cv2.imread(data[0][0], cv2.IMREAD_GRAYSCALE)
+    for i in range(1, n):
+        img_path = data[i][0]
+        img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+        numpy_vertical = np.hstack((numpy_vertical, np.full((img.shape[0], 5), fill_value=150, dtype=np.uint8), img))
+
+    qimg = cv2.imread(query_img_path, cv2.IMREAD_GRAYSCALE)
+    f, axarr = plt.subplots(2, 1, sharex="all", sharey="all")
+    axarr[0].imshow(qimg, cmap=plt.get_cmap('gray'))
+    axarr[0].title.set_text("Query")
+    axarr[1].imshow(numpy_vertical, cmap=plt.get_cmap('gray'))
+    axarr[1].title.set_text("Result")
+    plt.show()
+
+
+
