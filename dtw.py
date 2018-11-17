@@ -6,7 +6,7 @@ def dtw(sig1, sig2, window=5):
     return pydtw.dtw(sig1, sig2, pydtw.Settings(step='p0sym', window='palival', param=window, norm=False, compute_path=False)).get_dist()
 
 
-def dtw_fast(sig1, sig2, window=20):
+def dtw_fast(sig1, sig2, window=10):
     """
     Algoritmus Fast Dynamic Time Warping  pro dva signaly.
     :param array sig1: signal 1
@@ -20,6 +20,7 @@ def dtw_fast(sig1, sig2, window=20):
         sig1 = sig2
         sig2 = x
 
+    w = int(window / 2)
     xlen = len(sig2)
     ylen = len(sig1)
     D = np.full((ylen, xlen), np.iinfo(np.int32).max, dtype=np.int32)
@@ -27,13 +28,13 @@ def dtw_fast(sig1, sig2, window=20):
 
     for i in range(ylen):
         j = int(i*ratio)
-        l = max(0, j - window)
-        u = j + window + 1
+        l = max(0, j - w)
+        u = j + w + 1
         D[i, l:u] = np.absolute(sig2 - sig1[i])[l:u]
 
-    D[0, :window+1] = np.cumsum(D[0, :window+1])
+    D[0, :w+1] = np.cumsum(D[0, :w+1])
 
-    yindex = min(ylen-1, int(window/ratio))     # odhad
+    yindex = min(ylen-1, int(w/ratio))     # odhad
     while D[yindex, 0] == np.iinfo(np.int32).max:
         yindex -= 1
     while yindex < ylen and D[yindex, 0] != np.iinfo(np.int32).max:
@@ -43,14 +44,14 @@ def dtw_fast(sig1, sig2, window=20):
 
     for i in range(1, ylen):
         p = int(i * ratio)
-        l = max(p - window, 1)
-        u = min(p + window + 1, xlen)
+        l = max(p - w, 1)
+        u = min(p + w + 1, xlen)
 
         for j in range(l, u):
             m = min([D[i - 1, j - 1], D[i - 1, j], D[i, j - 1]])
             D[i, j] += m
 
-    return D[ylen - 1, xlen - 1]
+    return D[ylen - 1, xlen - 1], D
 
 
 def dtw_basic(sig1, sig2):
@@ -73,7 +74,7 @@ def dtw_basic(sig1, sig2):
             m = min([D[i-1, j-1], D[i-1, j], D[i, j-1]])
             D[i, j] += m
 
-    return D[len(sig1) - 1, len(sig2) - 1]
+    return D[len(sig1) - 1, len(sig2) - 1], D
 
 
 
